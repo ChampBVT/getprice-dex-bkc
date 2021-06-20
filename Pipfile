@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 web3 = "5.20.0"
+fastapi = "*"
+uvicorn = {version = "==0.13.4", extras = ["standard"]}
 
 [dev-packages]
 pylint = "2.8.3"

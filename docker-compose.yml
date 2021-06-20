@@ -10,5 +10,5 @@ services:
     # mount the volumes so we can change code and hot reload
     volumes:
       - ".:/service"
-    expose:
-      - 8080
+    ports:
+      - 8000:8000
