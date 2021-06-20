@@ -12,3 +12,10 @@ services:
       - ".:/service"
     ports:
       - 8000:8000
+
+  redis:
+    restart: always
+    container_name: redis
+    image: "redis:6.2.4-alpine"
+    expose:
+      - 6379

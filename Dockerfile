@@ -11,14 +11,14 @@ WORKDIR /service
 
 RUN groupadd -r python && useradd -m -r -g python python
 
-# Install the python dependencies
-COPY --chown=python:python Pipfile Pipfile.lock /service/
-
 RUN pip install dumb-init==1.2.5 pipenv==2021.5.29
+
+COPY --chown=python:python Pipfile Pipfile.lock /service/
 
 # Generate requirements file for pip to install dependencies
 RUN pipenv lock --keep-outdated --requirements > requirements.txt
 
+# Install python dependencies
 RUN pip install -r requirements.txt
 
 # copy current directory to the working directory
