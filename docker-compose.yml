@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  # first container
+  service:
+    # look for dockerfile and build the container
+    build: .
+    container_name: service
+    restart: always
+    # mount the volumes so we can change code and hot reload
+    volumes:
+      - ".:/service"
+    expose:
+      - 8080
