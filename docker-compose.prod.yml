@@ -6,7 +6,7 @@ services:
     # look for dockerfile and build the container
     build:
       context: .
-      target: development
+      target: deployment
     container_name: service
     restart: always
     # mount the volumes so we can change code and hot reload
