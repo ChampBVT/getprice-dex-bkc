@@ -60,8 +60,8 @@ def getPrice(chain, factory, pair):
             (10 ** token_decimal_diff)
 
     return {
-        token_names[0]: "{:.10f}".format(reserve_token2/reserve_token1),
-        token_names[1]: "{:.10f}".format(reserve_token1/reserve_token2)
+        token_names[0]: "{:.6f}".format(reserve_token2/reserve_token1),
+        token_names[1]: "{:.6f}".format(reserve_token1/reserve_token2)
     }
 
     #####################################################################

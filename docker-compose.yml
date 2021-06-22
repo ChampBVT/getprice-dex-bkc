@@ -1,19 +1,35 @@
+# TODO Add nginx & SSL
 version: "3.7"
 
 services:
   # first container
   service:
     # look for dockerfile and build the container
+    env_file:
+      - ./service/.env
     build:
-      context: .
-      target: development
+      context: ./service
+      target: "${PYTHON_ENV}"
     container_name: service
     restart: always
     # mount the volumes so we can change code and hot reload
     volumes:
-      - ".:/service"
+      - "./service:/service"
     ports:
       - 8000:8000
+
+  telegram_bot:
+    # look for dockerfile and build the container
+    env_file:
+      - ./telegram_bot/.env
+    build:
+      context: ./telegram_bot
+      target: "${PYTHON_ENV}"
+    container_name: telegram_bot
+    restart: always
+    # mount the volumes so we can change code and hot reload
+    volumes:
+      - "./telegram_bot:/telegram_bot"
 
   redis:
     restart: always

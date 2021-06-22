@@ -1,26 +1,29 @@
 import os
-from typing import Optional
 from get_price import getPrice
 from fastapi import FastAPI
 from fastapi import FastAPI, Request, Response
 from fastapi_redis_cache import FastApiRedisCache, cache
 
-LOCAL_REDIS_URL = "redis://redis:6379"
+PYTHON_ENV = os.getenv("PYTHON_ENV", "development")
 
-app = FastAPI(title="FastAPI Swap Token Pair Price")
+app = FastAPI(title="FastAPI Swap Token Pair Price",
+              docs_url="/docs"if PYTHON_ENV != "production"else None,
+              redoc_url="/redoc"if PYTHON_ENV != "production"else None)
 
 
 @app.on_event("startup")
 def startup():
     redis_cache = FastApiRedisCache()
     redis_cache.init(
-        host_url=os.environ.get("REDIS_URL", LOCAL_REDIS_URL),
+        host_url=os.environ.get("REDIS_URL", "redis://redis:6379"),
         prefix="Pair-Price",
         response_header="X-Redis-Cache",
         ignore_arg_types=[Request, Response]
     )
 
 # TODO Make function generalized
+
+
 @app.get("/gdr-wkub")
 @cache(expire=60)
 def get_gdr_wkub_pair_cache():

@@ -20,14 +20,13 @@ FROM python:3.9.5-slim as development
 WORKDIR /service
 
 RUN apt-get update \
-    && apt-get install gcc -y \
+    && apt-get install gcc dumb-init -y \
     && apt-get clean
+
 
 RUN groupadd -r python && useradd -m -r -g python python
 
 COPY --from=builder --chown=python:python /service .
-
-RUN pip install dumb-init==1.2.5
 
 RUN pip install -r requirements.txt
 
@@ -46,14 +45,12 @@ FROM python:3.9.5-slim as deployment
 WORKDIR /service
 
 RUN apt-get update \
-    && apt-get install gcc -y \
+    && apt-get install gcc dumb-init -y \
     && apt-get clean
 
 RUN groupadd -r python && useradd -m -r -g python python
 
 COPY --from=builder --chown=python:python /service .
-
-RUN pip install dumb-init==1.2.5
 
 RUN pip install -r requirements.txt
 
@@ -61,6 +58,6 @@ WORKDIR /service/src
 
 USER python
 
-EXPOSE 80
+EXPOSE 8000
 
-CMD ["dumb-init", "uvicorn", "--host", "0.0.0.0", "main:app", "--port", "80"]
+CMD ["dumb-init", "uvicorn", "--host", "0.0.0.0", "main:app"]
