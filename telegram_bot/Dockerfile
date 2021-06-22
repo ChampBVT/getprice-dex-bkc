@@ -35,7 +35,7 @@ CMD ["dumb-init", "pymon", "main.py"]
 
 ##############################################################################
 
-FROM python:3.9.5-alpine as deployment
+FROM python:3.9.5-alpine as production
 
 WORKDIR /telegram_bot
 

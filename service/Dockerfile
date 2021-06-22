@@ -40,7 +40,7 @@ CMD ["dumb-init", "uvicorn", "--host", "0.0.0.0", "main:app", "--reload"]
 
 ##############################################################################
 
-FROM python:3.9.5-slim as deployment
+FROM python:3.9.5-slim as production
 
 WORKDIR /service
 
