@@ -30,3 +30,7 @@ def startup():
 @cache(expire=60)
 def get_gdr_wkub_pair_cache():
     return getPrice(chain="BKC", factory="TukTuk", pair="WKUB/GDR")
+
+@app.get("/health-check")
+def health_check():
+    return { "status": "OK" }

@@ -24,7 +24,6 @@ def getPrice(chain, factory, pair):
     factory_address = web3.toChecksumAddress(AMM)
 
     # ABI Contract factory
-    print(os.getcwd())
     with open(os.getcwd() + '/ABIs/factory.json', 'r') as abi_definition:
         abi = json.load(abi_definition)
 
