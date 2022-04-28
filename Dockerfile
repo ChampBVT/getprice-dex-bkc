@@ -26,7 +26,7 @@ RUN apt-get update \
 
 RUN groupadd -r python && useradd -m -r -g python python
 
-# USER python
+USER python
 
 COPY --from=builder /dependencies/requirements.txt .
 
