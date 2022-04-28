@@ -19,7 +19,7 @@ dumb-init python telegram_bot/main.py &
   
 # Start the service
 # Using cd first to prevent the issue with open() & uvicorn --app-dir
-cd service/src && uvicorn --host 0.0.0.0 main:app &
+cd service/src && uvicorn --host 0.0.0.0 main:app --log-level warning&
   
 # Wait for any process to exit
 wait -n
