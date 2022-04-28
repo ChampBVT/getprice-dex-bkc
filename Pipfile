@@ -8,9 +8,16 @@ web3 = "5.20.0"
 fastapi = "0.65.2"
 uvicorn = {version = "==0.13.4", extras = ["standard"]}
 fastapi-redis-cache = "==0.2.4"
+python-dotenv = "*"
+python-telegram-bot = "==13.6"
+requests = "==2.25.1"
 
 [dev-packages]
 pylint = "2.8.3"
 
 [requires]
 python_version = "3.9"
+
+[scripts]
+bot = "python telegram_bot/main.py"
+dex = "bash -c 'cd service/src && uvicorn --host 0.0.0.0 main:app'"

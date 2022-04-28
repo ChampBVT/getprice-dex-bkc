@@ -3,6 +3,8 @@ from get_price import getPrice
 from fastapi import FastAPI
 from fastapi import FastAPI, Request, Response
 from fastapi_redis_cache import FastApiRedisCache, cache
+from dotenv import load_dotenv
+load_dotenv()
 
 PYTHON_ENV = os.getenv("PYTHON_ENV", "development")
 
