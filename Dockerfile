@@ -16,7 +16,7 @@ RUN pipenv lock --keep-outdated --requirements > requirements.txt
 FROM python:3.9.5-slim as production
 
 # Fix .local/bin not in PATH warning on pip
-ENV PATH "$PATH:~/.local/bin"
+ENV PATH "$PATH:/home/python/.local/bin"
 
 WORKDIR /usr/src/app
 
