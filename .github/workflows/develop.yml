@@ -63,7 +63,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: .github/task-definition.json
-          container-name: ${{ secrets.AWS_ECS_SERVICE }}
+          container-name: ${{ secrets.AWS_ECS_CONTAINER }}
           image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:${{ github.sha }}
 
       - name: Deploy Amazon ECS task definition
