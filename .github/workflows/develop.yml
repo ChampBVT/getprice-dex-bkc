@@ -43,6 +43,8 @@ jobs:
           registry: public.ecr.aws
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        env:
+          AWS_REGION: us-east-1
 
       - name: Docker Setup Buildx
         uses: docker/setup-buildx-action@v1.7.0
