@@ -33,4 +33,4 @@ def get_gdr_wkub_pair_cache():
 
 @app.get("/health-check")
 def health_check():
-    return { "status": "OK" }
+    return { "status": "OK", "app_revision": os.environ.get("APP_REVISION", "") }
