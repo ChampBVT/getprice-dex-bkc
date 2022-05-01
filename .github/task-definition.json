@@ -44,7 +44,7 @@
       "interactive": null,
       "healthCheck": null,
       "essential": true,
-      "links": null,
+      "links": ["getprice-dex-bkc-fast-api-container"],
       "hostname": null,
       "extraHosts": null,
       "pseudoTerminal": null,

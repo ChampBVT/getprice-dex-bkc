@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - service/**
+      - ./Dockerfile.fast_api
+      - ./start.sh
     branches:
       - micro-services
       - multiple-services-in-container

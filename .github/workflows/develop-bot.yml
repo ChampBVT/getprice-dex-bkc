@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - telegram_bot/**
+      - ./Dockerfile.telegram_bot
     branches:
       - multiple-services-in-container
       - micro-services

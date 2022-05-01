@@ -25,7 +25,6 @@ def startup():
 
 # TODO: Make function generalized
 
-
 @app.get("/gdr-wkub")
 @cache(expire=60)
 def get_gdr_wkub_pair_cache():
