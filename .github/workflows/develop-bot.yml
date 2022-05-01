@@ -6,6 +6,7 @@ on:
       - telegram_bot/**
     branches:
       - multiple-services-in-container
+      - micro-services
       - develop
 
 concurrency:
