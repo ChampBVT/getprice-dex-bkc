@@ -9,7 +9,7 @@
         "logDriver": "awslogs",
         "secretOptions": null,
         "options": {
-          "awslogs-group": "/ecs/getprice-dex-bkc-task-definition",
+          "awslogs-group": "/ecs/getprice-dex-bkc-fast-api-task-definition",
           "awslogs-region": "ap-southeast-1",
           "awslogs-stream-prefix": "ecs"
         }
@@ -29,10 +29,6 @@
         {
           "name": "REDIS_URL",
           "value": "redis://:@127.0.0.1:6379"
-        },
-        {
-          "name": "SERVICE_URL",
-          "value": "http://localhost:8000"
         }
       ],
       "resourceRequirements": null,
@@ -40,15 +36,10 @@
       "dnsServers": null,
       "mountPoints": [],
       "workingDirectory": null,
-      "secrets": [
-        {
-          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:355698733641:secret:TELEGRAM_TOKEN-3cCpCK",
-          "name": "TELEGRAM_TOKEN"
-        }
-      ],
+      "secrets": null,
       "dockerSecurityOptions": null,
       "memory": null,
-      "memoryReservation": 256,
+      "memoryReservation": null,
       "volumesFrom": [],
       "stopTimeout": null,
       "image": "",
@@ -68,15 +59,15 @@
       "dockerLabels": null,
       "systemControls": null,
       "privileged": null,
-      "name": "getprice-dex-bkc-container"
+      "name": ""
     }
   ],
   "placementConstraints": [],
-  "memory": "256",
+  "memory": "128",
   "taskRoleArn": "arn:aws:iam::355698733641:role/ecsTaskExecutionRole",
   "compatibilities": ["EXTERNAL", "EC2"],
   "taskDefinitionArn": "",
-  "family": "getprice-dex-bkc-task-definition",
+  "family": "getprice-dex-bkc-fast-api-task-definition",
   "requiresAttributes": [
     {
       "targetId": null,
@@ -100,18 +91,6 @@
       "targetId": null,
       "targetType": null,
       "value": null,
-      "name": "ecs.capability.secrets.asm.environment-variables"
-    },
-    {
-      "targetId": null,
-      "targetType": null,
-      "value": null,
-      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
-    },
-    {
-      "targetId": null,
-      "targetType": null,
-      "value": null,
       "name": "com.amazonaws.ecs.capability.task-iam-role"
     }
   ],
@@ -120,7 +99,7 @@
   "networkMode": null,
   "runtimePlatform": null,
   "cpu": "256",
-  "revision": 3,
+  "revision": 4,
   "status": "ACTIVE",
   "inferenceAccelerators": null,
   "proxyConfiguration": null,

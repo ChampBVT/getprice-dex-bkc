@@ -32,7 +32,6 @@ COPY --from=builder /dependencies/requirements.txt .
 
 RUN pip install -r requirements.txt && pip cache purge
 
-COPY /telegram_bot/ ./telegram_bot
 COPY /service ./service
 
 COPY start.sh .
