@@ -17,6 +17,8 @@ concurrency:
 jobs:
   deploy:
     name: Deploy
+    concurrency:
+      group: deploy
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -78,11 +80,11 @@ jobs:
         id: task-bot
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: .github/task-definition-fast-api.json
+          task-definition: .github/task-definition.json
           container-name: ${{ secrets.AWS_ECS_CONTAINER_TELEGRAM_BOT }}
           image: ${{ steps.bot-image.outputs.image }}
           environment-variables: |
-            SERVICE_URL=http://getprice-dex-bkc-fast-api-container:8000
+            SERVICE_URL=${{ secrets.AWS_ECS_CONTAINER_FAST_API }}:8000
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-service

@@ -2,12 +2,13 @@ name: Deploy Telegram bot service to ECS (EC2)
 
 on:
   push:
-    paths:
-      - telegram_bot/**
+    # paths:
+    #   - telegram_bot/**
     branches:
       - multiple-services-in-container
       - micro-services
       - develop
+      - multiple-containers
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
@@ -15,6 +16,8 @@ concurrency:
 
 jobs:
   deploy:
+    concurrency:
+      group: deploy
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
@@ -62,20 +65,41 @@ jobs:
           cache-to: type=gha,mode=max
           file: ./Dockerfile.telegram_bot
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
+      - name: Get latest task definitions
+        id: service-image
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ secrets.AWS_ECS_FAST_API_TASK_DEF }} \
+            --query taskDefinition > task-definition.json
+
+          IMAGE=$(cat task-definition.json | jq '.containerDefinitions[] | select(.name | contains("${{ secrets.AWS_ECS_CONTAINER_FAST_API }}")) | .image' | tr -d '"')
+          echo "::add-mask::$IMAGE"
+          echo "::set-output name=image::$IMAGE"
+
+      - name: Fill in the latest image ID of telegram bot in the Amazon ECS task definition
+        id: task-service
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: .github/task-definition-telegram-bot.json
+          task-definition: .github/task-definition.json
+          container-name: ${{ secrets.AWS_ECS_CONTAINER_FAST_API }}
+          image: ${{ steps.service-image.outputs.image }}
+          environment-variables: |
+            APP_REVISION=${{ github.sha }}
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-bot
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-service.outputs.task-definition }}
           container-name: ${{ secrets.AWS_ECS_CONTAINER_TELEGRAM_BOT }}
           image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_TELEGRAM_BOT }}:${{ github.sha }}
           environment-variables: |
-            SERVICE_URL=http://localhost:8000
+            SERVICE_URL=${{ secrets.AWS_ECS_CONTAINER_FAST_API }}:8000
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          task-definition: ${{ steps.task-bot.outputs.task-definition }}
           service: ${{ secrets.AWS_ECS_SERVICE_FAST_API }}
           cluster: ${{ secrets.AWS_ECS_CLUSTER }}
           wait-for-service-stability: true
