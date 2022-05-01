@@ -59,7 +59,7 @@
       "dockerLabels": null,
       "systemControls": null,
       "privileged": null,
-      "name": ""
+      "name": "getprice-dex-bkc-fast-api-container"
     }
   ],
   "placementConstraints": [],
