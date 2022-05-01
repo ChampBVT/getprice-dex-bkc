@@ -23,7 +23,7 @@ def startup():
         ignore_arg_types=[Request, Response]
     )
 
-# TODO Make function generalized
+# TODO: Make function generalized
 
 
 @app.get("/gdr-wkub")
