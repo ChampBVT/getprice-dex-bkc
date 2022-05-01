@@ -67,7 +67,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: .github/task-definition-telegram-bot.json
-          container-name: ${{ secrets.AWS_ECS_CONTAINER }}
+          container-name: ${{ secrets.AWS_ECS_CONTAINER_TELEGRAM_BOT }}
           image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_TELEGRAM_BOT }}:${{ github.sha }}
           environment-variables: |
             APP_REVISION=${{ github.sha }}
