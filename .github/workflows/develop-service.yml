@@ -86,7 +86,7 @@ jobs:
           container-name: ${{ secrets.AWS_ECS_CONTAINER_TELEGRAM_BOT }}
           image: ${{ steps.bot-image.outputs.image }}
           environment-variables: |
-            SERVICE_URL=${{ secrets.AWS_ECS_CONTAINER_FAST_API }}:8000
+            SERVICE_URL=http://${{ secrets.AWS_ECS_CONTAINER_FAST_API }}:8000
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-service

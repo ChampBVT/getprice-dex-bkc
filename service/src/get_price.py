@@ -4,7 +4,6 @@ from web3 import Web3
 import os
 
 # TODO: Make function generalized
-
 def getPrice(chain, factory, pair):
 
     #####################################################################
