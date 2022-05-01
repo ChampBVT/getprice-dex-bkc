@@ -2,8 +2,8 @@ name: Deploy Telegram bot service to ECS (EC2)
 
 on:
   push:
-    # paths:
-    # - telegram_bot/**
+    paths:
+      - telegram_bot/**
     branches:
       - multiple-services-in-container
       - micro-services
@@ -70,7 +70,7 @@ jobs:
           container-name: ${{ secrets.AWS_ECS_CONTAINER_TELEGRAM_BOT }}
           image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_TELEGRAM_BOT }}:${{ github.sha }}
           environment-variables: |
-            APP_REVISION=${{ github.sha }}
+            SERVICE_URL=${{ secrets.SERVICE_URL }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

@@ -2,8 +2,8 @@ name: Deploy FastAPI service to ECS (EC2)
 
 on:
   push:
-    # paths:
-    # - service/**
+    paths:
+      - service/**
     branches:
       - micro-services
       - multiple-services-in-container
