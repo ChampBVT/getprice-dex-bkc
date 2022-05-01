@@ -14,9 +14,6 @@ cleanup()
 # TODO: Proper redis config file
 redis-server --daemonize yes
 
-# Start the bit
-dumb-init python telegram_bot/main.py &
-  
 # Start the service
 # Using cd first to prevent the issue with open() & uvicorn --app-dir
 cd service/src && uvicorn --host 0.0.0.0 main:app --log-level warning&

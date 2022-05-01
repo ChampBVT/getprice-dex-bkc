@@ -1,7 +1,9 @@
-name: Deploy to ECS (EC2)
+name: Deploy Telegram bot service to ECS (EC2)
 
 on:
   push:
+    paths:
+      - telegram_bot/*
     branches:
       - multiple-services-in-container
       - develop
@@ -54,7 +56,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:${{ github.sha }}
+          tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_TELEGRAM_BOT }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -62,9 +64,9 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: .github/task-definition.json
+          task-definition: .github/task-definition-telegram-bot.json
           container-name: ${{ secrets.AWS_ECS_CONTAINER }}
-          image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:${{ github.sha }}
+          image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_TELEGRAM_BOT }}:${{ github.sha }}
           environment-variables: |
             APP_REVISION=${{ github.sha }}
 
@@ -72,6 +74,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ secrets.AWS_ECS_SERVICE }}
+          service: ${{ secrets.AWS_ECS_SERVICE_TELEGRAM_BOT }}
           cluster: ${{ secrets.AWS_ECS_CLUSTER }}
           wait-for-service-stability: true
