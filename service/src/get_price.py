@@ -5,7 +5,6 @@ import os
 
 # TODO: Make function generalized
 
-
 def getPrice(chain, factory, pair):
 
     #####################################################################

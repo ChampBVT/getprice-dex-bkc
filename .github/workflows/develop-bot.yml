@@ -70,12 +70,12 @@ jobs:
           container-name: ${{ secrets.AWS_ECS_CONTAINER_TELEGRAM_BOT }}
           image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_TELEGRAM_BOT }}:${{ github.sha }}
           environment-variables: |
-            SERVICE_URL=${{ secrets.SERVICE_URL }}
+            SERVICE_URL=http://localhost:8000
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ secrets.AWS_ECS_SERVICE_TELEGRAM_BOT }}
+          service: ${{ secrets.AWS_ECS_SERVICE_FAST_API }}
           cluster: ${{ secrets.AWS_ECS_CLUSTER }}
           wait-for-service-stability: true

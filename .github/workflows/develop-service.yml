@@ -2,12 +2,13 @@ name: Deploy FastAPI service to ECS (EC2)
 
 on:
   push:
-    paths:
-      - service/**
+    # paths:
+    #   - service/**
     branches:
       - micro-services
       - multiple-services-in-container
       - develop
+      - multiple-containers
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
@@ -62,11 +63,32 @@ jobs:
           cache-to: type=gha,mode=max
           file: ./Dockerfile.fast_api
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
+      - name: Get latest task definitions
+        id: bot-image
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ secrets.AWS_ECS_FAST_API_TASK_DEF }} \
+            --query taskDefinition > task-definition.json
+
+          IMAGE=$(cat task-definition.json | jq '.containerDefinitions[] | select(.name | contains("${{ secrets.AWS_ECS_CONTAINER_TELEGRAM_BOT }}")) | .image' | tr -d '"')
+          echo "::add-mask::$IMAGE"
+          echo "::set-output name=image::$IMAGE"
+
+      - name: Fill in the latest image ID of telegram bot in the Amazon ECS task definition
+        id: task-bot
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: .github/task-definition-fast-api.json
+          container-name: ${{ secrets.AWS_ECS_CONTAINER_TELEGRAM_BOT }}
+          image: ${{ steps.bot-image.outputs.image }}
+          environment-variables: |
+            SERVICE_URL=http://getprice-dex-bkc-fast-api-container:8000
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-service
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-bot.outputs.task-definition }}
           container-name: ${{ secrets.AWS_ECS_CONTAINER_FAST_API }}
           image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_FAST_API_SERVICE }}:${{ github.sha }}
           environment-variables: |
@@ -75,7 +97,7 @@ jobs:
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          task-definition: ${{ steps.task-service.outputs.task-definition }}
           service: ${{ secrets.AWS_ECS_SERVICE_FAST_API }}
           cluster: ${{ secrets.AWS_ECS_CLUSTER }}
           wait-for-service-stability: true

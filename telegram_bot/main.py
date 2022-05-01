@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.WARNING,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
@@ -25,7 +25,7 @@ def unknown(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text="Sorry, I didn't understand that command.")
 
-
+# TODO: Better module init
 def main():
     updater = Updater(token=os.getenv("TELEGRAM_TOKEN"), use_context=True)
 
