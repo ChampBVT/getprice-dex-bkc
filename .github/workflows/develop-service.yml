@@ -5,6 +5,7 @@ on:
     paths:
       - service/**
     branches:
+      - micro-services
       - multiple-services-in-container
       - develop
 
