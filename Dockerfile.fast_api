@@ -1,0 +1,43 @@
+# use python container image
+FROM python:3.9.5-alpine as builder
+
+# set the working directory of the image filesystem
+WORKDIR /dependencies
+
+RUN pip install pipenv==2021.5.29
+
+COPY Pipfile Pipfile.lock ./
+
+# Generate requirements file for pip to install dependencies
+RUN pipenv lock --keep-outdated --requirements > requirements.txt
+
+####################################################################
+
+FROM python:3.9.5-slim as production
+
+# Fix .local/bin not in PATH warning on pip
+ENV PATH "$PATH:/home/python/.local/bin"
+
+WORKDIR /usr/src/app
+
+RUN apt-get update \
+    && apt-get install gcc dumb-init redis-server -y \
+    && apt-get clean
+
+RUN groupadd -r python && useradd -m -r -g python python
+
+USER python
+
+COPY --from=builder /dependencies/requirements.txt .
+
+RUN pip install -r requirements.txt && pip cache purge
+
+COPY /service ./service
+
+COPY start.sh .
+
+EXPOSE 8000
+
+# Start services
+ENTRYPOINT ["bash", "./start.sh"]
+

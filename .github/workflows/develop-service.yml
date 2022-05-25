@@ -1,0 +1,108 @@
+name: Deploy FastAPI service to ECS (EC2)
+
+on:
+  push:
+    paths:
+      - service/**
+      - ./Dockerfile.fast_api
+      - ./start.sh
+    branches:
+      - micro-services
+      - multiple-services-in-container
+      - develop
+      - multiple-containers
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy
+    concurrency:
+      group: deploy
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-1
+
+      # For private ECR Repository
+      # - name: Login to Amazon ECR
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v1
+
+      # For private ECR Repository
+      # - name: Login to ECR via docker/login-action
+      #   uses: docker/login-action@v1.14.1
+      #   with:
+      #     registry: ${{ steps.login-ecr.outputs.registry }}
+
+      - name: Login to Public ECR
+        uses: docker/login-action@v1.14.1
+        with:
+          registry: public.ecr.aws
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        env:
+          AWS_REGION: us-east-1
+
+      - name: Docker Setup Buildx
+        uses: docker/setup-buildx-action@v1.7.0
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2.10.0
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_FAST_API_SERVICE }}:${{ github.sha }},${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_FAST_API_SERVICE }}:latest
+          cache-from: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_FAST_API_SERVICE }}:latest
+          cache-to: type=inline
+          file: ./Dockerfile.fast_api
+
+      - name: Get latest task definitions
+        id: bot-image
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ secrets.AWS_ECS_FAST_API_TASK_DEF }} \
+            --query taskDefinition > task-definition.json
+
+          IMAGE=$(cat task-definition.json | jq '.containerDefinitions[] | select(.name | contains("${{ secrets.AWS_ECS_CONTAINER_TELEGRAM_BOT }}")) | .image' | tr -d '"')
+          echo "::add-mask::$IMAGE"
+          echo "::set-output name=image::$IMAGE"
+
+      - name: Fill in the latest image ID of telegram bot in the Amazon ECS task definition
+        id: task-bot
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: .github/task-definition.json
+          container-name: ${{ secrets.AWS_ECS_CONTAINER_TELEGRAM_BOT }}
+          image: ${{ steps.bot-image.outputs.image }}
+          environment-variables: |
+            SERVICE_URL=http://${{ secrets.AWS_ECS_CONTAINER_FAST_API }}:8000
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-service
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-bot.outputs.task-definition }}
+          container-name: ${{ secrets.AWS_ECS_CONTAINER_FAST_API }}
+          image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_FAST_API_SERVICE }}:${{ github.sha }}
+          environment-variables: |
+            APP_REVISION=${{ github.sha }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-service.outputs.task-definition }}
+          service: ${{ secrets.AWS_ECS_SERVICE_FAST_API }}
+          cluster: ${{ secrets.AWS_ECS_CLUSTER }}
+          wait-for-service-stability: true
