@@ -62,9 +62,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_FAST_API_SERVICE }}:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_FAST_API_SERVICE }}:${{ github.sha }},${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_FAST_API_SERVICE }}:latest
+          cache-from: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_FAST_API_SERVICE }}:latest
+          cache-to: type=inline
           file: ./Dockerfile.fast_api
 
       - name: Get latest task definitions
