@@ -10,9 +10,9 @@ on:
       - main
   workflow_dispatch:
     inputs:
-      cache:
+      no-cache:
         type: boolean
-        description: Use docker caching
+        description: Disable docker caching
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
@@ -68,7 +68,7 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY_TELEGRAM_BOT }}:latest
           cache-to: type=inline
           file: ./Dockerfile.telegram_bot
-          no-cache: ${{ github.event.inputs.message || false }}
+          no-cache: ${{ github.event.inputs.no-cache || false }}
 
       - name: Get latest task definitions
         id: service-image
