@@ -7,10 +7,8 @@ on:
       - ./Dockerfile.fast_api
       - ./start.sh
     branches:
-      - micro-services
-      - multiple-services-in-container
       - develop
-      - multiple-containers
+      - main
   workflow_dispatch:
 
 concurrency:
