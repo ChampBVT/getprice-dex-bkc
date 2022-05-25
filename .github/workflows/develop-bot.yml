@@ -6,10 +6,8 @@ on:
       - telegram_bot/**
       - ./Dockerfile.telegram_bot
     branches:
-      - multiple-services-in-container
-      - micro-services
       - develop
-      - multiple-containers
+      - main
   workflow_dispatch:
 
 concurrency:
