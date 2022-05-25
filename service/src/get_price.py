@@ -1,10 +1,9 @@
 import json
 from constants import addresses
 from web3 import Web3
+import os
 
-# TODO Make function generalized
-
-
+# TODO: Make function generalized
 def getPrice(chain, factory, pair):
 
     #####################################################################
@@ -23,11 +22,11 @@ def getPrice(chain, factory, pair):
     factory_address = web3.toChecksumAddress(AMM)
 
     # ABI Contract factory
-    with open('ABIs/factory.json', 'r') as abi_definition:
+    with open(os.getcwd() + '/ABIs/factory.json', 'r') as abi_definition:
         abi = json.load(abi_definition)
 
     # ABI Contract Pancake Pair
-    with open('ABIs/token.json', 'r') as abi_definition:
+    with open(os.getcwd() + '/ABIs/token.json', 'r') as abi_definition:
         parsed_pair = json.load(abi_definition)
 
     #####################################################################
