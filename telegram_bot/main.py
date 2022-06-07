@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-logging.basicConfig(level=logging.WARNING,
+logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
@@ -36,9 +36,9 @@ def main():
     dispatcher.add_handler(CommandHandler("price", price))
     dispatcher.add_handler(unknown_handler)
 
+    logging.info('Telegram bot started...')
     updater.start_polling()
     updater.idle()
-
 
 if __name__ == "__main__":
     main()
